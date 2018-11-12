@@ -1,0 +1,7 @@
+__pycache__/
+general_files/
+proteins_curvature_torsion/
+proteins_ec/
+thesis_files/
+
+uniprot_sprot.dat
