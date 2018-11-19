@@ -89,14 +89,27 @@ def normalize_data(protein_array):
 		torsion = protein.get_torsion()
 		norm_curvature = normalize_values(curvature, c_min, c_max, bins)
 		norm_torsion = normalize_values(torsion, t_min, t_max, bins)
-		histog = np.histogram(norm_torsion, range(bins))[0]
+		c_histog = np.histogram(norm_curvature, range(bins))[0]
+		t_histog = np.histogram(norm_torsion, range(bins))[0]
 		#print(norm_curvature, norm_torsion)
-		print(histog)
+		print(c_histog+t_histog)
 		#plt.hist(histog, bins)
 		#plt.hist(norm_torsion, bins)
 		#plt.show()
 		#print(c_min,c_max)
-		break
+		protein.set_feature_vector(c_histog+t_histog)
+	return protein_array
+
+'''
+def fit_data(X, Y_i):
+	X_t = np.transpose(X)
+	W = np.dot(np.dot(np.linalg.pinv(np.dot(X_t, X)), X_t), Y_i)
+	return W
+'''
+def linear_regression(protein_array, binary_vector):
+	for protein in protein_array:
+		#fit_data(protein.get_feature_vector(), binary_vector)
+		protein.get_feature_vector()
 
 def main():
 	start_time = datetime.now() #Datetime for benchmarking
@@ -111,22 +124,24 @@ def main():
 	#binary_vector = bv.insert_ec_into_binary_vector(binary_vector, protein_array)
 	#np.save('general_files/binary_vector', binary_vector) #later no need to do the vector every time again
 
-	#binary_vector = np.load('general_files/binary_vector.npy')
+	binary_vector = np.load('general_files/binary_vector.npy')
 
 	#cth.save_ca_coordinates(protein_array) #16min
-	ca_array = cth.npy_loader(protein_array)
-	#TODO: get curvature and torsion from ca_array
+	#ca_array = cth.npy_loader(protein_array)
+	#protein_curvature_torsion_arr = cth.set_curvature_and_torsion_from_ca(ca_array) #9min
 	
-	#protein_curvature_torsion_arr = cth.set_curvature_and_torsion(protein_array) #29min
+	#protein_curvature_torsion_arr = cth.set_curvature_and_torsion(protein_array) #29min, 22.5min
 	#fh.npy_saver(protein_curvature_torsion_arr)
-	#protein_curvature_torsion_arr = fh.npy_loader(protein_array) #protein_array = connection array
+	protein_curvature_torsion_arr = fh.npy_loader(protein_array) #protein_array = connection array
 
-	for protein in ca_array:
-		print(protein.get_ec_number(), protein.get_uniprot_id())
-	print(len(protein_array), len(ca_array)) 
+	#for protein in protein_curvature_torsion_arr:
+	#	print(protein.get_ec_number(), protein.get_uniprot_id())
+	#print(len(protein_array), len(protein_curvature_torsion_arr)) 
 	
-	#normalize_data(protein_curvature_torsion_arr)
+	proteins_with_features = normalize_data(protein_curvature_torsion_arr)
 	
+	linear_regression(proteins_with_features, binary_vector)
+
 	end_time = datetime.now()
 	print("Start time: ", start_time, " Finish time: ", end_time)
 	print("Runtime: " , end_time - start_time)

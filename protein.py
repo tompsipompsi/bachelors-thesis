@@ -8,6 +8,7 @@ class Protein:
 		self.curvature = []
 		self.torsion = []
 		self.ca_coordinates = []
+		self.feature_vector = []
 
 	def get_uniprot_id(self):
 		return self.uniprot_id
@@ -57,6 +58,9 @@ class Protein:
 	def set_ca_coordinates(self, ca_coordinates):
 		self.ca_coordinates = ca_coordinates
 
+	def set_feature_vector(self, feature_vector):
+		self.feature_vector = feature_vector
+
 	def get_curvature(self):
 		return self.curvature
 
@@ -65,6 +69,9 @@ class Protein:
 
 	def get_ca_coordinates(self):
 		return self.ca_coordinates
+
+	def get_feature_vector(self):
+		return self.feature_vector
 
 	def print_protein(self):
 		print(self.ec_number, self.uniprot_id, self.curvature, self.torsion)

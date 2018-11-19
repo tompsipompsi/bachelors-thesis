@@ -123,10 +123,10 @@ def set_curvature_and_torsion(protein_array):
 				curvature_torsion_arr.append(protein)
 			else:
 				print(cleaned_ec)
-				break #remove to read all
+				#break #remove to read all
 		else:
 			print(pdb_id, cleaned_ec)
-			break #remove to read all
+			#break #remove to read all
 	return curvature_torsion_arr
 
 def npy_saver(protein_array):
@@ -181,8 +181,33 @@ def npy_loader(connection_array):
 		file = str(protein.get_uniprot_id()) + '.npy'
 		try:
 			arr = np.load(path+file)
+			print(arr[0])
 			protein.set_ca_coordinates(arr[0])
 			protein_array.append(protein)
 		except FileNotFoundError:
 			pass
 	return protein_array
+
+def set_curvature_and_torsion_from_ca(protein_array):
+	'''
+	Args:
+		protein_array: Array of protein objects.
+	Returns:
+		curvature_torsion_arr: Array of protein objects that
+			have curvature an torsion set.
+	'''
+	curvature_torsion_arr = []
+	for protein in protein_array:
+		#cleaned_ec = protein.get_cleaned_ec_number()
+		#pdb_id = read_id_connection(cleaned_ec)
+		#if pdb_id != None:
+		print(protein.get_uniprot_id())
+		ca_coordinates = protein.get_ca_coordinates()
+		curvature, torsion = curvature_and_torsion(ca_coordinates)
+		#protein.set_pdb_id(pdb_id) 
+		protein.set_curvature(curvature)
+		protein.set_torsion(torsion)
+		#else:
+		#	print(pdb_id, cleaned_ec)
+		break
+	return curvature_torsion_arr
