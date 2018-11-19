@@ -44,7 +44,7 @@ def read_uniprot_sequence():
 			#	break
 	return connection_array, protein_array
 
-def get_min_max_data(protein_array): #ask about this
+def get_min_max_data(protein_array):
 	'''
 	Args:
 		protein_array: Array containing protein objects.
@@ -100,6 +100,7 @@ def normalize_data(protein_array):
 
 def main():
 	start_time = datetime.now() #Datetime for benchmarking
+
 	#connection_array, protein_array = read_uniprot_sequence() #over 5min
 	#connection_array = read_uniprot_sequence()
 	#fh.csv_writer('new_connection_array.csv', connection_array)
@@ -112,16 +113,19 @@ def main():
 
 	#binary_vector = np.load('general_files/binary_vector.npy')
 
-	#protein_curvature_torsion_arr = cth.set_curvature_and_torsion(protein_array) #29min
-
-	#fh.npy_saver(protein_curvature_torsion_arr)
-	protein_curvature_torsion_arr = fh.npy_loader(protein_array) #protein_array = connection array
-
-	#for protein in protein_curvature_torsion_arr:
-	#	print(protein.get_ec_number(), protein.get_uniprot_id())
-	#print(len(protein_array), len(protein_curvature_torsion_arr)) #curv_tors eri määrä ku mitä tiedostoja????
+	#cth.save_ca_coordinates(protein_array) #16min
+	ca_array = cth.npy_loader(protein_array)
+	#TODO: get curvature and torsion from ca_array
 	
-	normalize_data(protein_curvature_torsion_arr)
+	#protein_curvature_torsion_arr = cth.set_curvature_and_torsion(protein_array) #29min
+	#fh.npy_saver(protein_curvature_torsion_arr)
+	#protein_curvature_torsion_arr = fh.npy_loader(protein_array) #protein_array = connection array
+
+	for protein in ca_array:
+		print(protein.get_ec_number(), protein.get_uniprot_id())
+	print(len(protein_array), len(ca_array)) 
+	
+	#normalize_data(protein_curvature_torsion_arr)
 	
 	end_time = datetime.now()
 	print("Start time: ", start_time, " Finish time: ", end_time)

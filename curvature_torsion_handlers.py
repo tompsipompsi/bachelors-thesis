@@ -117,7 +117,7 @@ def set_curvature_and_torsion(protein_array):
 			ca_coordinates = read_pdb_file(pdb_id)
 			if len(ca_coordinates) > 0:
 				curvature, torsion = curvature_and_torsion(ca_coordinates)
-				protein.set_pdb_id(pdb_id) #tarvitaanko tätä missään
+				protein.set_pdb_id(pdb_id) 
 				protein.set_curvature(curvature)
 				protein.set_torsion(torsion)
 				curvature_torsion_arr.append(protein)
@@ -128,3 +128,61 @@ def set_curvature_and_torsion(protein_array):
 			print(pdb_id, cleaned_ec)
 			break #remove to read all
 	return curvature_torsion_arr
+
+def npy_saver(protein_array):
+	'''
+	Args:
+		protein_array: contains protein objects.
+	'''
+	path = 'proteins_ca_coordinates/'
+	for protein in protein_array:
+		arr = np.array([protein.get_ca_coordinates()])
+		#print(arr[0])
+		file = str(protein.get_uniprot_id()) + '.npy'
+		np.save(path+file, arr)
+
+def save_ca_coordinates(protein_array):
+	'''
+	Args:
+		protein_array: Array of protein objects.
+	Returns:
+	'''
+	coordinate_array = []
+	for protein in protein_array:
+		cleaned_ec = protein.get_cleaned_ec_number()
+		pdb_id = read_id_connection(cleaned_ec)
+		if pdb_id != None:
+			ca_coordinates = read_pdb_file(pdb_id)
+			if len(ca_coordinates) > 0:
+				protein.set_ca_coordinates(ca_coordinates)
+				coordinate_array.append(protein)
+			else:
+				print(cleaned_ec)
+				#break #remove to read all
+		else:
+			print(pdb_id, cleaned_ec)
+			#break #remove to read all
+	#print(coordinate_array)
+	npy_saver(coordinate_array)
+
+def npy_loader(connection_array):
+	'''
+	Args:
+		connection_array: All protein objects found in the uniprot_sport.dat
+	Returns:
+		protein_array: Array of protein objects, that have ca_coordinates.
+	Raises:
+		FileNotFoundError: An error occured when trying to read a file that does
+			not exists. Error is expected to happen often and simply passed.
+	'''
+	path = 'proteins_ca_coordinates/'
+	protein_array = []
+	for protein in connection_array:
+		file = str(protein.get_uniprot_id()) + '.npy'
+		try:
+			arr = np.load(path+file)
+			protein.set_ca_coordinates(arr[0])
+			protein_array.append(protein)
+		except FileNotFoundError:
+			pass
+	return protein_array

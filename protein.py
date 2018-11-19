@@ -7,6 +7,7 @@ class Protein:
 			self.splitted_ec_number = self.split_ec_number()
 		self.curvature = []
 		self.torsion = []
+		self.ca_coordinates = []
 
 	def get_uniprot_id(self):
 		return self.uniprot_id
@@ -36,7 +37,7 @@ class Protein:
 		ec_str = ""
 		i = 0
 		length = len(self.splitted_ec_number)
-		print(self.splitted_ec_number)
+		#print(self.splitted_ec_number)
 		for char in self.splitted_ec_number:
 			ec_str += char
 			if i < length-1:
@@ -53,11 +54,17 @@ class Protein:
 	def set_torsion(self, torsion):
 		self.torsion = torsion
 
+	def set_ca_coordinates(self, ca_coordinates):
+		self.ca_coordinates = ca_coordinates
+
 	def get_curvature(self):
 		return self.curvature
 
 	def get_torsion(self):
 		return self.torsion
+
+	def get_ca_coordinates(self):
+		return self.ca_coordinates
 
 	def print_protein(self):
 		print(self.ec_number, self.uniprot_id, self.curvature, self.torsion)
