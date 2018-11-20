@@ -59,7 +59,7 @@ def get_min_max_data(protein_array):
 		t_min.append(min(protein.get_torsion()))
 	return min(c_min), max(c_max), min(t_min), max(t_max)
 
-def normalize_data(protein_array):
+def normalize_data(protein_array, binary_vector):
 	'''
 	Args:
 		protein_array: Array containing protein objects.
@@ -67,7 +67,7 @@ def normalize_data(protein_array):
 		
 	'''
 	c_min, c_max, t_min, t_max = get_min_max_data(protein_array)
-	bins = 1000
+	bins = 100
 	def normalize_values(array, min_s, max_s, bins):
 		'''
 		Args:
@@ -83,7 +83,8 @@ def normalize_data(protein_array):
 			norm_sample = int((sample-min_s)/(max_s-min_s)*bins)
 			norm_data.append(norm_sample)
 		return np.array(norm_data)
-
+	arr = []
+	vector = []
 	for protein in protein_array:
 		curvature = protein.get_curvature()
 		torsion = protein.get_torsion()
@@ -97,19 +98,33 @@ def normalize_data(protein_array):
 		#plt.hist(norm_torsion, bins)
 		#plt.show()
 		#print(c_min,c_max)
-		protein.set_feature_vector(c_histog+t_histog)
-	return protein_array
+		#protein.set_feature_vector(c_histog+t_histog)
+		arr.append(c_histog+t_histog)
+		vector.append(binary_vector)
+	arr = np.array(arr)
+	vec = np.array(vector)
+	return arr, vec
 
-'''
+
 def fit_data(X, Y_i):
-	X_t = np.transpose(X)
-	W = np.dot(np.dot(np.linalg.pinv(np.dot(X_t, X)), X_t), Y_i)
-	return W
-'''
-def linear_regression(protein_array, binary_vector):
-	for protein in protein_array:
-		#fit_data(protein.get_feature_vector(), binary_vector)
-		protein.get_feature_vector()
+	X = X - np.outer(np.sum(X,1), np.ones(X.shape[1]))
+	x_lamba = 1
+	#X_t = np.transpose(X)
+	W = np.dot(np.dot(np.linalg.pinv(np.dot(X.T, X)+x_lamba*np.eye(X.shape[0])), X.T), Y_i)
+	return W #*X-text
+
+def linear_regression(protein_array, proteins_with_features, binary_vector):
+	#for protein in protein_array:
+	print(fit_data(proteins_with_features, binary_vector))
+		#print(protein.get_feature_vector())
+		#break
+
+#rmse = np.sqrt(np.mean(y_i-y)**2)
+#y_i = y_i - np.outer(np.ones(y.shape[0]), np.mean(y,0))
+#=> same for prediction y_p
+
+#np.corrcoef(vec(y_i), vec(y_p)) => 2x2 matrix
+#Y = training data
 
 def main():
 	start_time = datetime.now() #Datetime for benchmarking
@@ -138,9 +153,9 @@ def main():
 	#	print(protein.get_ec_number(), protein.get_uniprot_id())
 	#print(len(protein_array), len(protein_curvature_torsion_arr)) 
 	
-	proteins_with_features = normalize_data(protein_curvature_torsion_arr)
+	proteins_with_features, vector = normalize_data(protein_curvature_torsion_arr, binary_vector)
 	
-	linear_regression(proteins_with_features, binary_vector)
+	linear_regression(protein_curvature_torsion_arr, proteins_with_features, vector)
 
 	end_time = datetime.now()
 	print("Start time: ", start_time, " Finish time: ", end_time)
