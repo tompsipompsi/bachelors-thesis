@@ -2,6 +2,7 @@ import numpy as np
 from datetime import datetime
 from Bio import SwissProt
 import matplotlib.pyplot as plt
+from sklearn.model_selection import train_test_split 	
 
 from protein import Protein
 import binary_vector as bv
@@ -84,7 +85,7 @@ def normalize_data(protein_array, binary_vector):
 			norm_data.append(norm_sample)
 		return np.array(norm_data)
 	arr = []
-	vector = []
+	b_vector = []
 	for protein in protein_array:
 		curvature = protein.get_curvature()
 		torsion = protein.get_torsion()
@@ -92,26 +93,24 @@ def normalize_data(protein_array, binary_vector):
 		norm_torsion = normalize_values(torsion, t_min, t_max, bins)
 		c_histog = np.histogram(norm_curvature, range(bins))[0]
 		t_histog = np.histogram(norm_torsion, range(bins))[0]
-		#print(norm_curvature, norm_torsion)
-		print(c_histog+t_histog)
-		#plt.hist(histog, bins)
-		#plt.hist(norm_torsion, bins)
-		#plt.show()
-		#print(c_min,c_max)
 		#protein.set_feature_vector(c_histog+t_histog)
 		arr.append(c_histog+t_histog)
-		vector.append(binary_vector)
+		b_vector.append(binary_vector)
 	arr = np.array(arr)
-	vec = np.array(vector)
-	return arr, vec
+	b_vec = np.array(b_vector)
+	return arr, b_vec
 
 
 def fit_data(X, Y_i):
 	X = X - np.outer(np.sum(X,1), np.ones(X.shape[1]))
-	x_lamba = 1
-	#X_t = np.transpose(X)
-	W = np.dot(np.dot(np.linalg.pinv(np.dot(X.T, X)+x_lamba*np.eye(X.shape[0])), X.T), Y_i)
-	return W #*X_test
+	#x_lamba = 1
+	#ridge regression
+	#W = np.dot(np.dot(np.linalg.pinv(np.dot(X.T, X)+x_lamba*np.eye(X.shape[0])), X.T), Y_i) 
+	#eri kokoa, siksi ylläoleva ei toimi: np.dot(X.T, X)+x_lamba*np.eye(X.shape[0])
+
+	#linear regression
+	W = np.dot(np.dot(np.linalg.pinv(np.dot(X.T, X)), X.T), Y_i)
+	return W
 
 #Y = training data
 
@@ -119,27 +118,31 @@ def predict(x_test, W): #1
 	y_pred = np.dot(x_test, W)
 	return y_pred
 
-def find_index(): #2
+def find_index(y_pred, y_test_i): #2
 	index = np.argmax(np.dot(y_pred, y_test_i))
 
 def find_y_test_i(): #3
 	return
 
-def temporary(): #4
+def temporary_name(y_i, y_pred, y): #4
 	y_i = y_i - np.outer(np.ones(y.shape[0]), np.mean(y,0))
 	y_pred = y_pred - np.outer(np.ones(y.shape[0]), np.mean(y,0))
 
-def correlation_coefficient(): #5
+def correlation_coefficient(y_i, y_pred): #5
 	np.corrcoef(vec(y_i), vec(y_pred)) #=> 2x2 matrix
 
-def root_mean_square_error(): #6
+def root_mean_square_error(y_i, y): #6
 	rmse = np.sqrt(np.mean(y_i-y)**2)
 
 def ridge_regression(protein_array, proteins_with_features, binary_vector):
 	#for protein in protein_array:
-	print(fit_data(proteins_with_features, binary_vector))
+	#print(fit_data(proteins_with_features, binary_vector))
 		#print(protein.get_feature_vector())
 		#break
+	x_train, x_test, y_train, y_test = train_test_split(proteins_with_features, binary_vector, test_size=0.5)
+	W = fit_data(x_train, y_train)
+	y_pred = predict(x_test, W)
+	
 
 def main():
 	start_time = datetime.now() #Datetime for benchmarking
@@ -168,9 +171,9 @@ def main():
 	#	print(protein.get_ec_number(), protein.get_uniprot_id())
 	#print(len(protein_array), len(protein_curvature_torsion_arr)) 
 	
-	proteins_with_features, vector = normalize_data(protein_curvature_torsion_arr, binary_vector)
+	proteins_with_features, b_vector = normalize_data(protein_curvature_torsion_arr, binary_vector)
 	
-	ridge_regression(protein_curvature_torsion_arr, proteins_with_features, vector)
+	ridge_regression(protein_curvature_torsion_arr, proteins_with_features, b_vector)
 
 	end_time = datetime.now()
 	print("Start time: ", start_time, " Finish time: ", end_time)
