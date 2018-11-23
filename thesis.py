@@ -111,20 +111,35 @@ def fit_data(X, Y_i):
 	x_lamba = 1
 	#X_t = np.transpose(X)
 	W = np.dot(np.dot(np.linalg.pinv(np.dot(X.T, X)+x_lamba*np.eye(X.shape[0])), X.T), Y_i)
-	return W #*X-text
+	return W #*X_test
 
-def linear_regression(protein_array, proteins_with_features, binary_vector):
+#Y = training data
+
+def predict(x_test, W): #1
+	y_pred = np.dot(x_test, W)
+	return y_pred
+
+def find_index(): #2
+	index = np.argmax(np.dot(y_pred, y_test_i))
+
+def find_y_test_i(): #3
+	return
+
+def temporary(): #4
+	y_i = y_i - np.outer(np.ones(y.shape[0]), np.mean(y,0))
+	y_pred = y_pred - np.outer(np.ones(y.shape[0]), np.mean(y,0))
+
+def correlation_coefficient(): #5
+	np.corrcoef(vec(y_i), vec(y_pred)) #=> 2x2 matrix
+
+def root_mean_square_error(): #6
+	rmse = np.sqrt(np.mean(y_i-y)**2)
+
+def ridge_regression(protein_array, proteins_with_features, binary_vector):
 	#for protein in protein_array:
 	print(fit_data(proteins_with_features, binary_vector))
 		#print(protein.get_feature_vector())
 		#break
-
-#rmse = np.sqrt(np.mean(y_i-y)**2)
-#y_i = y_i - np.outer(np.ones(y.shape[0]), np.mean(y,0))
-#=> same for prediction y_p
-
-#np.corrcoef(vec(y_i), vec(y_p)) => 2x2 matrix
-#Y = training data
 
 def main():
 	start_time = datetime.now() #Datetime for benchmarking
@@ -155,7 +170,7 @@ def main():
 	
 	proteins_with_features, vector = normalize_data(protein_curvature_torsion_arr, binary_vector)
 	
-	linear_regression(protein_curvature_torsion_arr, proteins_with_features, vector)
+	ridge_regression(protein_curvature_torsion_arr, proteins_with_features, vector)
 
 	end_time = datetime.now()
 	print("Start time: ", start_time, " Finish time: ", end_time)
