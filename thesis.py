@@ -96,6 +96,7 @@ def normalize_data(protein_array, binary_vector):
 		#protein.set_feature_vector(c_histog+t_histog)
 		arr.append(c_histog+t_histog)
 		b_vector.append(binary_vector)
+		print(protein.get_ec_number())
 	arr = np.array(arr)
 	b_vec = np.array(b_vector)
 	return arr, b_vec
@@ -103,13 +104,13 @@ def normalize_data(protein_array, binary_vector):
 
 def fit_data(X, Y_i):
 	X = X - np.outer(np.sum(X,1), np.ones(X.shape[1]))
-	#x_lamba = 1
+	x_lamba = 1
 	#ridge regression
-	#W = np.dot(np.dot(np.linalg.pinv(np.dot(X.T, X)+x_lamba*np.eye(X.shape[0])), X.T), Y_i) 
+	W = np.dot(np.dot(np.linalg.pinv(np.dot(X.T, X)+x_lamba*np.eye(X.shape[1])), X.T), Y_i)  #was X.shape[0]
 	#eri kokoa, siksi ylläoleva ei toimi: np.dot(X.T, X)+x_lamba*np.eye(X.shape[0])
 
 	#linear regression
-	W = np.dot(np.dot(np.linalg.pinv(np.dot(X.T, X)), X.T), Y_i)
+	#W = np.dot(np.dot(np.linalg.pinv(np.dot(X.T, X)), X.T), Y_i)
 	return W
 
 #Y = training data
@@ -118,31 +119,31 @@ def predict(x_test, W): #1
 	y_pred = np.dot(x_test, W)
 	return y_pred
 
-def find_index(y_pred, y_test_i): #2
-	index = np.argmax(np.dot(y_pred, y_test_i))
-
-def find_y_test_i(): #3
-	return
-
-def temporary_name(y_i, y_pred, y): #4
-	y_i = y_i - np.outer(np.ones(y.shape[0]), np.mean(y,0))
-	y_pred = y_pred - np.outer(np.ones(y.shape[0]), np.mean(y,0))
-
-def correlation_coefficient(y_i, y_pred): #5
-	np.corrcoef(vec(y_i), vec(y_pred)) #=> 2x2 matrix
-
-def root_mean_square_error(y_i, y): #6
-	rmse = np.sqrt(np.mean(y_i-y)**2)
-
 def ridge_regression(protein_array, proteins_with_features, binary_vector):
-	#for protein in protein_array:
-	#print(fit_data(proteins_with_features, binary_vector))
-		#print(protein.get_feature_vector())
-		#break
 	x_train, x_test, y_train, y_test = train_test_split(proteins_with_features, binary_vector, test_size=0.5)
 	W = fit_data(x_train, y_train)
 	y_pred = predict(x_test, W)
-	
+	#print(y_pred)
+
+	#2
+	print(y_pred.shape, W.T.shape)
+	#y_test_i = np.dot(W.T[1], x_test[0]) #should be x_test?
+	#index = np.argmax(np.dot(y_pred, y_test_i))
+	#print(index)
+
+	#3
+	y_pred_w_index = y_test_i[index]
+
+	#4
+	#y_i = y_i - np.outer(np.ones(y_i.shape[0]), np.mean(y,0))
+	#y_pred_w_index = y_pred_w_index - np.outer(np.ones(y_pred_w_index.shape[0]), np.mean(y,0))
+
+	#5
+	#np.corrcoef(vec(y_i), vec(y_pred_w_index)) #=> 2x2 matrix, variables not right
+
+	#6
+	#rmse = np.sqrt(np.mean(y_i-y)**2) #variables not right
+
 
 def main():
 	start_time = datetime.now() #Datetime for benchmarking
