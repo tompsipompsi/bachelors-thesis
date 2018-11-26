@@ -104,16 +104,20 @@ def normalize_data(protein_array, binary_vector):
 
 def fit_data(X, Y_i):
 	X = X - np.outer(np.sum(X,1), np.ones(X.shape[1]))
-	x_lamba = 1
+	x_lambda = 1
 	#ridge regression
-	W = np.dot(np.dot(np.linalg.pinv(np.dot(X.T, X)+x_lamba*np.eye(X.shape[1])), X.T), Y_i)  #was X.shape[0]
-	#eri kokoa, siksi ylläoleva ei toimi: np.dot(X.T, X)+x_lamba*np.eye(X.shape[0])
+	W = np.dot(np.dot(np.linalg.pinv(np.dot(X.T, X)+x_lambda*np.eye(X.shape[1])), X.T), Y_i)  #was X.shape[0]
+	#eri kokoa, siksi ylläoleva ei toimi: np.dot(X.T, X)+x_lambda*np.eye(X.shape[0])
 
 	#linear regression
 	#W = np.dot(np.dot(np.linalg.pinv(np.dot(X.T, X)), X.T), Y_i)
 	return W
 
 #Y = training data
+#https://stackoverflow.com/questions/38562701/ridge-regression-scikit-learn-vs-direct-calculation-does-not-match-for-alpha
+#https://simplyml.com/the-simplest-machine-learning-algorithm/
+#https://www.google.com/search?q=ridge+regression+with+numpy&ie=utf-8&oe=utf-8&client=firefox-b
+#https://anujkatiyal.com/blog/2017/09/30/ml-regression/
 
 def predict(x_test, W): #1
 	y_pred = np.dot(x_test, W)
