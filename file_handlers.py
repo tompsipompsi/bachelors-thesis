@@ -38,7 +38,10 @@ def csv_loader(filename, obj=False):
 	array = []
 	for val in df.values:
 		if obj:
-			array.append(Protein(val[0], val[1]))
+			protein = Protein(val[0], val[1])
+			if len(protein.get_splitted_ec_number()) > 0: #this is to take care i.e. 'n2' -numbers, they will have the 'n' removed
+				array.append(protein) #4942
+			#else: #44
 		else:
 			array.append([val[0], val[1]])
 	return array

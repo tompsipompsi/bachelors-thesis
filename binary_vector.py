@@ -28,7 +28,7 @@ def find_greatest_ec_values(protein_array):
 	binary_vector = create_binary_vector(max(vector1), max(vector2), max(vector3), max(vector4))
 	return binary_vector
 
-def create_binary_vector(len1, len2, len3, len4):
+def create_binary_vector_old(len1, len2, len3, len4):
 	'''
 	Args:
 		len1, len2, len3, len4: integers

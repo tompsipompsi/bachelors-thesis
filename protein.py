@@ -1,10 +1,14 @@
+'''
+TODO: class definion
+'''
+
 class Protein:
 	def __init__(self, ec_number=None, uniprot_id=None, pdb_id=None):
 		self.uniprot_id = uniprot_id
 		self.ec_number = ec_number
 		self.pdb_id = pdb_id
 		if self.ec_number != None:
-			self.splitted_ec_number = self.split_ec_number()
+			self.splitted_ec_number = self._split_ec_number()
 		self.curvature = []
 		self.torsion = []
 		self.ca_coordinates = []
@@ -16,19 +20,29 @@ class Protein:
 	def get_ec_number(self):
 		return self.ec_number
 
-	def is_integer(self, num):
+	def _is_integer(self, num):
 		try: 
 			int(num)
 			return True
 		except ValueError:
 			return False
 
-	def split_ec_number(self):
-		#removes non-integer values from the ec_number and returns it as a array of strings
+	def _split_ec_number(self):
+		#removes '-' values from the ec_number and returns it as a array of strings
 		splitted_ec_number = []
 		for value in self.ec_number.split("."):
-			if self.is_integer(value):
+			if self._is_integer(value):
 				splitted_ec_number.append(value)
+			elif len(value) > 1: #this is to take care i.e. 'n2' -numbers, they will have the 'n' removed
+				return []
+				'''
+				ec_number_part = []
+				for char in list(value):
+					if self._is_integer(char):
+						ec_number_part.append(char)
+				if len(ec_number_part) > 0:
+					splitted_ec_number.append(''.join(ec_number_part))
+				'''
 		return splitted_ec_number
 
 	def get_splitted_ec_number(self):
@@ -38,10 +52,9 @@ class Protein:
 		ec_str = ""
 		i = 0
 		length = len(self.splitted_ec_number)
-		#print(self.splitted_ec_number)
 		for char in self.splitted_ec_number:
 			ec_str += char
-			if i < length-1:
+			if i < length - 1:
 				ec_str += "."
 			i += 1
 		return ec_str
@@ -73,10 +86,10 @@ class Protein:
 	def get_feature_vector(self):
 		return self.feature_vector
 
-	def print_protein(self):
+	"""def print_protein(self):
 		print(self.ec_number, self.uniprot_id, self.curvature, self.torsion)
 
-	"""def get_as_array(self):
+	def get_as_array(self):
 		return [self.ec_number, self.uniprot_id, self.curvature, self.torsion]
 
 	def get_as_str(self):

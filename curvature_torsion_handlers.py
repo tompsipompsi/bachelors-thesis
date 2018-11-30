@@ -163,7 +163,7 @@ def save_ca_coordinates(protein_array):
 			print(pdb_id, cleaned_ec)
 			#break #remove to read all
 	#print(coordinate_array)
-	npy_saver(coordinate_array)
+	npy_saver(coordinate_array) 
 
 def npy_loader(connection_array):
 	'''
@@ -198,16 +198,10 @@ def set_curvature_and_torsion_from_ca(protein_array):
 	'''
 	curvature_torsion_arr = []
 	for protein in protein_array:
-		#cleaned_ec = protein.get_cleaned_ec_number()
-		#pdb_id = read_id_connection(cleaned_ec)
-		#if pdb_id != None:
 		print(protein.get_uniprot_id())
 		ca_coordinates = protein.get_ca_coordinates()
 		curvature, torsion = curvature_and_torsion(ca_coordinates)
-		#protein.set_pdb_id(pdb_id) 
 		protein.set_curvature(curvature)
 		protein.set_torsion(torsion)
-		#else:
-		#	print(pdb_id, cleaned_ec)
-		break
+		curvature_torsion_arr.append(protein)
 	return curvature_torsion_arr
