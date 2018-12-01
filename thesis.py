@@ -46,12 +46,12 @@ def read_uniprot_sequence():
 			#	break
 	return connection_array, protein_array
 
-def get_min_max_data(protein_array):
+def get_mean_std_data(protein_array):
 	'''
 	Args:
 		protein_array: Array containing protein objects.
 	Returns:
-		Minimum and maximum values of the curvature and torsion of all proteins.
+		Mean and standard deviation of the curvature and torsion of all proteins.
 	'''
 	c_mean, c_std, t_mean, t_std = [], [], [], []
 	for protein in protein_array:
@@ -68,7 +68,7 @@ def normalize_data(protein_array, bins):
 	Returns:
 		
 	'''
-	c_mean, c_std, t_mean, t_std = get_min_max_data(protein_array)
+	c_mean, c_std, t_mean, t_std = get_mean_std_data(protein_array)
 	for protein in protein_array:
 		val = protein.get_torsion()
 		ival = np.where(val > t_mean + 3*t_std)[0]
@@ -197,7 +197,7 @@ def create_binary_vector(protein_curvature_torsion_arr):
 def main():
 	start_time = datetime.now() #Datetime for benchmarking
 
-	bins = 1000
+	bins = 1000 #1500 toimii
 
 	#connection_array, protein_array = read_uniprot_sequence() #over 5min
 	#connection_array = read_uniprot_sequence()
