@@ -111,6 +111,8 @@ def normalize_data(protein_array, bins):
 		c_histog = np.histogram(norm_curvature, range(bins))[0]
 		t_histog = np.histogram(norm_torsion, range(bins))[0]
 		#protein.set_feature_vector(c_histog+t_histog)
+		#pylab.hist(norm_curvature)
+		#pylab.show()
 		arr.append(np.concatenate([c_histog, t_histog]))
 		print(protein.get_ec_number())
 	arr = np.array(arr)
@@ -128,7 +130,7 @@ def predict(x_test, W):
 	y_pred = np.dot(x_test.T, W)
 	return y_pred
 '''
-def ridge_regression(protein_array, proteins_with_features, binary_vector, nmax):
+def ridge_regression(proteins_with_features, binary_vector, nmax):
 	x_train, x_test, y_train, y_test = train_test_split(proteins_with_features, binary_vector, test_size=0.5)
 	w_opt = fit_data(x_train, y_train)
 
@@ -141,7 +143,7 @@ def ridge_regression(protein_array, proteins_with_features, binary_vector, nmax)
 	index = np.argmax(val, 0)
 	#pylab.plot(index)
 	#pylab.show()
-	#pylab.hist() tai jtn tonnepäin
+	#pylab.hist() #tai jtn tonnepäin
 
 	pred = y_train[index]
 
@@ -154,11 +156,14 @@ def ridge_regression(protein_array, proteins_with_features, binary_vector, nmax)
 		f_1 = 2*precision*recall/(precision+recall) #f1-score
 
 		print(precision, recall, f_1)
+		return f_1
 
+	result_list = []
 	for i in range(4): #4 is the maximum length of ec number
 		pred_1 = pred[:,nmax[i]:nmax[i+1]]
 		y_test_1 = y_test[:,nmax[i]:nmax[i+1]]
-		f_pred(pred_1, y_test_1)
+		result_list.append(f_pred(pred_1, y_test_1))
+	return result_list
 
 	#y_i = y_i - np.outer(np.ones(y_i.shape[0]), np.mean(y,0))
 	#y_pred_w_index = y_pred_w_index - np.outer(np.ones(y_pred_w_index.shape[0]), np.mean(y,0))
@@ -197,31 +202,42 @@ def create_binary_vector(protein_curvature_torsion_arr):
 def main():
 	start_time = datetime.now() #Datetime for benchmarking
 
-	bins = 1000 #1500 toimii
+	#bins = 1000 #1500 toimii
 
 	#connection_array, protein_array = read_uniprot_sequence() #over 5min
 	#connection_array = read_uniprot_sequence()
 	#fh.csv_writer('new_connection_array.csv', connection_array)
 
-	protein_array = fh.csv_loader('connection_array.csv', True)
+	protein_array = fh.csv_loader('connection_array_with_dublicates.csv', True)
 
 	#cth.save_ca_coordinates(protein_array) #14min #ennen 2522 kpl, jälkeen 2486
 	
-	#ca_array = cth.npy_loader(protein_array)
-	#protein_curvature_torsion_arr = cth.set_curvature_and_torsion_from_ca(ca_array) #9min #2484kpl
+	ca_array = cth.npy_loader(protein_array)
+	protein_curvature_torsion_arr = cth.set_curvature_and_torsion_from_ca(ca_array) #9min #2484kpl
 	
 	#protein_curvature_torsion_arr = cth.set_curvature_and_torsion(protein_array) #29min, 22.5min
-	#fh.npy_saver(protein_curvature_torsion_arr)
-	protein_curvature_torsion_arr = fh.npy_loader(protein_array) #protein_array = connection array
-
-	binary_vector, nmax = create_binary_vector(protein_curvature_torsion_arr)
+	fh.npy_saver(protein_curvature_torsion_arr)
+	#protein_curvature_torsion_arr = fh.npy_loader(protein_array) #protein_array = connection array
+	
+	'''binary_vector, nmax = create_binary_vector(protein_curvature_torsion_arr)
+	
 	#np.save('general_files/binary_vector', binary_vector)
 	#binary_vector = np.load('general_files/binary_vector.npy')
 
 	proteins_with_features = normalize_data(protein_curvature_torsion_arr, bins)
 	
-	ridge_regression(protein_curvature_torsion_arr, proteins_with_features, binary_vector, nmax)
-	
+	result_list = []
+	result_list2 = []
+	result_list3 = []
+	result_list4 = []
+	for i in range(1):
+		results = ridge_regression(proteins_with_features, binary_vector, nmax)
+		result_list.append(results[0])
+		result_list2.append(results[1])
+		result_list3.append(results[2])
+		result_list4.append(results[3])'''
+	#print(np.mean(result_list), np.mean(result_list2), np.mean(result_list3), np.mean(result_list4))
+
 	end_time = datetime.now()
 	print("Start time: ", start_time, " Finish time: ", end_time)
 	print("Runtime: " , end_time - start_time)

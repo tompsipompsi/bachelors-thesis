@@ -141,13 +141,23 @@ def npy_saver(protein_array):
 		file = str(protein.get_uniprot_id()) + '.npy'
 		np.save(path+file, arr)
 
+def npy_saver_for_single_protein(protein):
+	'''
+	Args:
+		protein_array: contains protein objects.
+	'''
+	path = 'proteins_ca_coordinates/'
+	arr = np.array([protein.get_ca_coordinates()])
+	file = str(protein.get_uniprot_id()) + '.npy'
+	np.save(path+file, arr)
+
 def save_ca_coordinates(protein_array):
 	'''
 	Args:
 		protein_array: Array of protein objects.
 	Returns:
 	'''
-	coordinate_array = []
+	#coordinate_array = []
 	for protein in protein_array:
 		cleaned_ec = protein.get_cleaned_ec_number()
 		pdb_id = read_id_connection(cleaned_ec)
@@ -155,7 +165,8 @@ def save_ca_coordinates(protein_array):
 			ca_coordinates = read_pdb_file(pdb_id)
 			if len(ca_coordinates) > 0:
 				protein.set_ca_coordinates(ca_coordinates)
-				coordinate_array.append(protein)
+				#coordinate_array.append(protein)
+				npy_saver_for_single_protein(protein)
 			else:
 				print(cleaned_ec)
 				#break #remove to read all
@@ -163,7 +174,7 @@ def save_ca_coordinates(protein_array):
 			print(pdb_id, cleaned_ec)
 			#break #remove to read all
 	#print(coordinate_array)
-	npy_saver(coordinate_array) 
+	#npy_saver(coordinate_array) 
 
 def npy_loader(connection_array):
 	'''

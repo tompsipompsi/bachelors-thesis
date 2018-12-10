@@ -4,5 +4,7 @@ proteins_curvature_torsion/
 proteins_ec/
 thesis_files/
 proteins_ca_coordinates/
+proteins_ca_coordinates_new/
+proteins_curvature_torsion_new/
 
 uniprot_sprot.dat
