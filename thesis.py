@@ -197,30 +197,43 @@ def create_binary_vector(protein_curvature_torsion_arr):
 def main():
 	start_time = datetime.now() #Datetime for benchmarking
 
-	bins = 1000 #1500 toimii
+	bins = 1000 #1500 works
 
-	#connection_array, protein_array = read_uniprot_sequence() #over 5min
-	#connection_array = read_uniprot_sequence()
-	#fh.csv_writer('new_connection_array.csv', connection_array)
+	'''
+	Connection array is used to store the EC number and UniProt id.
+	It is saved as .csv, and loaded directly into protein objects.
+	Array of protein objects can also be directly obtained from reader.
+	'''
+	#connection_array, protein_array = read_uniprot_sequence()
+	#fh.csv_writer('general_files/', 'connection_array.csv', connection_array)
+	protein_array = fh.csv_loader('general_files/', 'connection_array.csv')
 
-	protein_array = fh.csv_loader('connection_array.csv', True)
-
-	#cth.save_ca_coordinates(protein_array) #14min #ennen 2522 kpl, jälkeen 2486
+	'''
+	CA stuff. Optional with the next section.
+	'''
+	cth.save_ca_coordinates(protein_array) #14min
+	ca_array = fh.npy_loader('proteins_ca_coordinates/', protein_array, is_ca=True)
+	#protein_curvature_torsion_arr = cth.set_curvature_and_torsion_from_ca(ca_array) #9min
 	
-	#ca_array = cth.npy_loader(protein_array)
-	#protein_curvature_torsion_arr = cth.set_curvature_and_torsion_from_ca(ca_array) #9min #2484kpl
-	
+	'''
+	Straight from protein array
+	'''
 	#protein_curvature_torsion_arr = cth.set_curvature_and_torsion(protein_array) #29min, 22.5min
-	#fh.npy_saver(protein_curvature_torsion_arr)
-	protein_curvature_torsion_arr = fh.npy_loader(protein_array) #protein_array = connection array
+	#fh.npy_saver('proteins_curvature_torsion/', protein_curvature_torsion_arr)
+	protein_curvature_torsion_arr = fh.npy_loader('proteins_curvature_torsion/', protein_array)
 
-	binary_vector, nmax = create_binary_vector(protein_curvature_torsion_arr)
+	'''
+	Binary vector
+	'''
+	#binary_vector, nmax = create_binary_vector(protein_curvature_torsion_arr)
 	#np.save('general_files/binary_vector', binary_vector)
-	#binary_vector = np.load('general_files/binary_vector.npy')
+	binary_vector = np.load('general_files/binary_vector.npy')
 
-	proteins_with_features = normalize_data(protein_curvature_torsion_arr, bins)
-	
-	ridge_regression(protein_curvature_torsion_arr, proteins_with_features, binary_vector, nmax)
+	'''
+	Machine learning
+	'''
+	#proteins_with_features = normalize_data(protein_curvature_torsion_arr, bins)
+	#ridge_regression(protein_curvature_torsion_arr, proteins_with_features, binary_vector, nmax)
 	
 	end_time = datetime.now()
 	print("Start time: ", start_time, " Finish time: ", end_time)

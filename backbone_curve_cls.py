@@ -1,3 +1,9 @@
+'''
+NOTE: This file is not written by me, I got it from my BSc thesis instructor
+since it contains necessary mathemathical operations that are needed 
+when processing the data.
+'''
+
 ######################
 ## Version 0.1 #######
 ## /**********************************************************************

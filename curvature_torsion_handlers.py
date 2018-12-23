@@ -4,7 +4,7 @@ Functions that play with curvature, torsion and pdb files.
 import numpy as np
 from Bio.PDB.PDBParser import PDBParser
 from backbone_curve_cls import backbone_curve_cls
-#import pylab
+import file_handlers as fh
 
 def read_id_connection(cleaned_ec):
 	'''
@@ -77,6 +77,7 @@ def interpolate_curve(ca_coordinates):
 
 def curvature_and_torsion(ca_coordinates):
 	'''
+	Calculates the curvature and torsion from ca coordinates.
 	Args:
 		ca_coordinates: Numpy array of alpha carbon (CA) 
 			coordinates of one protein.
@@ -129,23 +130,11 @@ def set_curvature_and_torsion(protein_array):
 			#break #remove to read all
 	return curvature_torsion_arr
 
-def npy_saver(protein_array):
-	'''
-	Args:
-		protein_array: contains protein objects.
-	'''
-	path = 'proteins_ca_coordinates/'
-	for protein in protein_array:
-		arr = np.array([protein.get_ca_coordinates()])
-		#print(arr[0])
-		file = str(protein.get_uniprot_id()) + '.npy'
-		np.save(path+file, arr)
-
 def save_ca_coordinates(protein_array):
 	'''
+	Saves the ca coordinates of proteins into .npy files.
 	Args:
 		protein_array: Array of protein objects.
-	Returns:
 	'''
 	coordinate_array = []
 	for protein in protein_array:
@@ -162,31 +151,7 @@ def save_ca_coordinates(protein_array):
 		else:
 			print(pdb_id, cleaned_ec)
 			#break #remove to read all
-	#print(coordinate_array)
-	npy_saver(coordinate_array) 
-
-def npy_loader(connection_array):
-	'''
-	Args:
-		connection_array: All protein objects found in the uniprot_sport.dat
-	Returns:
-		protein_array: Array of protein objects, that have ca_coordinates.
-	Raises:
-		FileNotFoundError: An error occured when trying to read a file that does
-			not exists. Error is expected to happen often and simply passed.
-	'''
-	path = 'proteins_ca_coordinates/'
-	protein_array = []
-	for protein in connection_array:
-		file = str(protein.get_uniprot_id()) + '.npy'
-		try:
-			arr = np.load(path+file)
-			print(arr[0])
-			protein.set_ca_coordinates(arr[0])
-			protein_array.append(protein)
-		except FileNotFoundError:
-			pass
-	return protein_array
+	fh.npy_saver('proteins_ca_coordinates/', coordinate_array, save_ca=True) 
 
 def set_curvature_and_torsion_from_ca(protein_array):
 	'''

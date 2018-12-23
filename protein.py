@@ -86,18 +86,3 @@ class Protein:
 	def get_feature_vector(self):
 		return self.feature_vector
 
-	"""def print_protein(self):
-		print(self.ec_number, self.uniprot_id, self.curvature, self.torsion)
-
-	def get_as_array(self):
-		return [self.ec_number, self.uniprot_id, self.curvature, self.torsion]
-
-	def get_as_str(self):
-		string = ""
-		string += self.ec_number + ',' + self.uniprot_id + ','
-		if len(self.curvature) > 0:
-			string = string.join(str(i) for i in self.curvature)
-			string += ','
-		if len(self.torsion) > 0:
-			string = string.join(str(i) for i in self.torsion)
-		return string"""

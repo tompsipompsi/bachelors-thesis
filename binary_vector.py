@@ -1,4 +1,5 @@
 '''
+NOTE: this file is obsolete
 Some functions to create the binary vector.
 '''
 import numpy as np
